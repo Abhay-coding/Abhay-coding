@@ -2,26 +2,29 @@ name: Generate Snake
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # daily
-  workflow_dispatch:
+    - cron: "0 0 * * *"          # Runs once every day
+  workflow_dispatch:              # Allows manual run
+
+permissions:
+  contents: write                 # REQUIRED to commit the SVG
 
 jobs:
-  generate-snake:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Generate snake (Platane/snk)
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Generate snake
         uses: Platane/snk@v3
+        id: snake-gif
         with:
           github_user_name: Abhay-coding
-          outputs: dist/snake.svg
+          outputs: dist/snake.svg, dist/snake-dark.svg
 
-      - name: Commit generated snake
+      - name: Push snake.svg
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'dist/snake.svg'
-          message: 'chore: generate contribution snake'
-          author_name: "github-actions[bot]"
-          author_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          add: 'dist/*.svg'
+          message: 'Generated contribution snake'
